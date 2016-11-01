@@ -1,0 +1,130 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+
+<style type="text/css">
+   body {
+      background-color: #ffffff;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: medium;
+   }
+
+   table {
+      border: medium none black;
+   }
+
+   td {
+      vertical-align: middle;
+   }
+
+   .code-inline {
+      font-family: monospace;
+   }
+
+   .code-listing {
+      font-family: monospace;
+      padding-left: 18pt;
+   }
+
+   .code-listing-hanging {
+      font-family: monospace;
+      text-indent: -18pt;
+      padding-left: 36pt;
+   }
+</style>
+
+<title>Brute Primer Example</title>
+
+</head>
+<body>
+
+<h1>Brute Primer Example</h1>
+
+<h2>Overview</h2>
+
+<p>To demonstrate the usage of Brute Primer, we will design four primers that amplify the upstream and downstream regions of <i>S140</i>, which is a small, non-coding RNA (sRNA) gene in <i>B. subtilis</i>. According to <a href="http://genome.jouy.inra.fr/cgi-bin/seb/index.py"><i>B. subtilis</i> Expression Data Browser</a>, the coordinates of <i>S140</i> are <span class="code-inline">474268</span> to <span class="code-inline">474634</span> on the plus strand with respect to <a href="http://www.ebi.ac.uk/ena/data/view/AL009126"><span class="code-inline">AL009126</span></a>. In this example, nucleotide index is one-based.</p>
+
+<p>The eventual purpose of such amplifications is for long-flanking homology PCR (LFH-PCR) that will be used to delete <i>S140</i>. The length of each region to be amplified is approximately 1 kbp. Sequence of <span class="code-inline">AL009126</span> in Pearson FASTA format is included in the <span class="code-inline">example</span> directory as <span class="code-inline">AL009126.fasta</span>.</p>
+
+<p>The commands in this example are assumed to be carried out with <span class="code-inline">example</span> as the current directory. For the commands that invoke Brute Primer, prepend <span class="code-inline">perl</span> when using the Windows command prompt (since Windows does not heed the shebang line).</p>
+
+<br/>
+
+<h2>Defining Search Regions and Generating Primer Sequences</h2>
+
+<p>Brute Primer can create primers of varying lengths. For this example, primers that have lengths ranging from 18 to 27 nt are considered. Four search regions (for four primers) need to be specified so that Brute Primer can generate primer sequences from. A FASTA file can have multiple sequences, so the name of the sequence needs to be given as well. The names of the sequences in a FASTA file can be determined from the following command on Linux or Cygwin.</p>
+
+<div class="code-listing-hanging">
+   grep "^&gt;" AL009126.fasta<br/>
+</div>
+
+<p>On the Windows command prompt, use the following command instead.</p>
+
+<div class="code-listing-hanging">
+   findstr /R /C:"^&gt;" AL009126.fasta<br/>
+</div>
+
+<p>For <span class="code-inline">AL009126.fasta</span>, there is only one sequence, which has the name <span class="code-inline">AL009126</span>. (Recall that, in the Pearson FASTA format, the portion of the text between the leading angle bracket and the first space is the name of the sequence.) This sequence name is the argument for the required <span class="code-inline">-entry</span> option of Brute Primer.</p>
+
+<p>Let's first consider the upstream region. For the forward primer search region, we will arbitrarily search the region between the two bases that are 951 and 1050 bases, inclusive, upstream of the first base of <i>S140</i>. Using the interval notation from mathematics, the region would be <span class="code-inline">[473218, 473317]</span>. For the reverse primer search region, the interval used is <span class="code-inline">[474250, 474317]</span>. Translated into a Brute Primer command,</p>
+
+<div class="code-listing-hanging">
+   ../brute-primer.pl &#x5c;<br/>
+      -entry AL009126 &#x5c;<br/>
+      -fwd-region 473218..473317 &#x5c;<br/>
+      -rev-region 474250..474317 &#x5c;<br/>
+      -length-range 18..27 &#x5c;<br/>
+      -sequence AL009126.fasta &#x5c;<br/>
+      -out s140-up.xml &#x5c;<br/>
+      -out-format 0<br/>
+</div>
+
+<p>will store the primer pair candidates that are consistent and unique in their annealing locations (according to tntBLAST) in <span class="code-inline">s140-up.xml</span> (included in the <span class="code-inline">example</span> directory).</p>
+
+<p>Similarly for the downstream region, the forward and reverse search regions used are <span class="code-inline">[474585, 474652]</span> and <span class="code-inline">[475585, 475684]</span>, respectively. The corresponding Brute Primer command for the downstream region is</p>
+
+<div class="code-listing-hanging">
+   ../brute-primer.pl &#x5c;<br/>
+      -entry AL009126 &#x5c;<br/>
+      -fwd-region 474585..474652 &#x5c;<br/>
+      -rev-region 475585..475684 &#x5c;<br/>
+      -length-range 18..27 &#x5c;<br/>
+      -sequence AL009126.fasta &#x5c;<br/>
+      -out s140-down.xml &#x5c;<br/>
+      -out-format 0<br/>
+</div>
+
+<p>which will store the primer pair candidates in <span class="code-inline">s140-down.xml</span> (included in the <span class="code-inline">example</span> directory).</p>
+
+<br/>
+
+<h2>Applying Primer Criteria</h2>
+
+<p>By design, Brute Primer does not directly let the user apply a set of criteria to the primers being generated. Instead, the user should know XQuery (recommended) or SQL in order to apply specific criteria to the primer candidates returned by Brute Primer. The rationale behind this design lies in the fact that the criteria being imposed varies widely from user to user.</p>
+
+<p>As an example, the following criteria will be applied to the primers created by Brute Primer in the previous section.</p>
+
+<ol>
+<li>GC clamp with at least two bases.</li>
+<li>Melting temperatures of the forward and reverse primers should be between 52&#x2103; and 58&#x2103;.</li>
+<li>Difference in melting temperatures of the forward and reverse primers is no greater than 5&#x2103; and should be as minimal as possible.</li>
+</ol>
+
+<p>These criteria are implemented in the XQuery file <span class="code-inline">top-primer-pairs.xq</span> with specific lines labeled (as comments) with the criterion number. To run the XQuery file, execute the following Zorba command, which will print the result to standard output.</p>
+
+<div class="code-listing-hanging">
+   zorba --indent --trailing-nl --context-item &lt;brute-primers-xml-path&gt; top-primer-pairs.xq<br/>
+</div>
+
+<p>where <span class="code-inline">&lt;brute-primers-xml-path&gt;</span> is the path to <span class="code-inline">s140-up.xml</span> or <span class="code-inline">s140-down.xml</span>. To write the result to a file, use the <span class="code-inline">--output-file</span> option. Results from running <span class="code-inline">top-primer-pairs.xq</span> on <span class="code-inline">s140-up.xml</span> and <span class="code-inline">s140-down.xml</span> are included in the <span class="code-inline">example</span> directory as <span class="code-inline">s140-up-five-pairs.xml</span> and <span class="code-inline">s140-down-five-pairs.xml</span>, respectively. Only the top five primer pairs are returned for each region. The number of primer pairs returned, as well as other parameters, are hard coded in <span class="code-inline">top-primer-pairs.xq</span> (which is for demonstration purposes).</p>
+
+<br/>
+
+<h2>Experimental Support</h2>
+
+<p>Primer Pair 13720 from <span class="code-inline">s140-up-five-pairs.xml</span> and Primer Pair 18590 from <span class="code-inline">s140-down-five-pairs.xml</span> were used in an actual LFH-PCR experiment. The reverse primer of Primer Pair 13720 and the forward primer of Primer Pair 18590 had 5' tail sequences added for joining to an antibiotic resistance cassette. Running the four selected primers (with the addition of the 5' tails to two of the primers) through tntBLAST with the <span class="code-inline">--dangle5</span> option set to <span class="code-inline">T</span>, the original calculations of the melting temperatures differed slightly (because Brute Primer consults tntBLAST with <span class="code-inline">--dangle5</span> option set to <span class="code-inline">F</span>) but was not significant enough to violate the criteria imposed above.</p>
+
+<p><i>S140</i> was successfully deleted using LFH-PCR with Primer Pairs 13720 and 18590 created by Brute Primer.</p>
+
+</body>
+</html>

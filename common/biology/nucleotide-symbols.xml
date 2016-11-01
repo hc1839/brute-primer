@@ -1,0 +1,79 @@
+<nucleotide-groups>
+  <variable symbol="G">
+    <base>G</base>
+    <complement>C</complement>
+  </variable>
+  <variable symbol="A">
+    <base>A</base>
+    <complement>T</complement>
+  </variable>
+  <variable symbol="T">
+    <base>T</base>
+    <complement>A</complement>
+  </variable>
+  <variable symbol="C">
+    <base>C</base>
+    <complement>G</complement>
+  </variable>
+  <variable symbol="R">
+    <base>G</base>
+    <base>A</base>
+    <complement>Y</complement>
+  </variable>
+  <variable symbol="Y">
+    <base>T</base>
+    <base>C</base>
+    <complement>R</complement>
+  </variable>
+  <variable symbol="M">
+    <base>A</base>
+    <base>C</base>
+    <complement>K</complement>
+  </variable>
+  <variable symbol="K">
+    <base>G</base>
+    <base>T</base>
+    <complement>M</complement>
+  </variable>
+  <variable symbol="S">
+    <base>G</base>
+    <base>C</base>
+    <complement>S</complement>
+  </variable>
+  <variable symbol="W">
+    <base>A</base>
+    <base>T</base>
+    <complement>W</complement>
+  </variable>
+  <variable symbol="H">
+    <base>A</base>
+    <base>C</base>
+    <base>T</base>
+    <complement>D</complement>
+  </variable>
+  <variable symbol="B">
+    <base>G</base>
+    <base>T</base>
+    <base>C</base>
+    <complement>V</complement>
+  </variable>
+  <variable symbol="V">
+    <base>G</base>
+    <base>C</base>
+    <base>A</base>
+    <complement>B</complement>
+  </variable>
+  <variable symbol="D">
+    <base>G</base>
+    <base>A</base>
+    <base>T</base>
+    <complement>H</complement>
+  </variable>
+  <variable symbol="N">
+    <base>G</base>
+    <base>A</base>
+    <base>T</base>
+    <base>C</base>
+    <complement>N</complement>
+  </variable>
+</nucleotide-groups>

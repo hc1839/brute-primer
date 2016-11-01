@@ -1,0 +1,113 @@
+[Description]
+
+Brute Primer (codenamed "Korrin") is a command-line program that generates PCR
+primers using a brute-force method. It allows the user to specify what regions
+of a sequence to generate primers, the range of primer lengths, and the output
+format (XML or TSV) for the primer candidates. Brute Primer relies on
+thermonucleotideBLAST (tntBLAST) from Los Alamos National Lab to select the
+subset of primer candidates that are consistent and unique in their annealing
+locations.
+
+An advantage of Brute Primer is that primers are generated and considered in an
+exhaustive manner. This is a disadvantage in and of itself: depending on the
+parameters given, it may take Brute Primer a significant amount of time to
+complete. To effectively use the output from Brute Primer, the user should know
+XQuery (recommended) or SQL (when the output is in TSV).
+
+Brute Primer is coded in Perl, XQuery, and XSLT.
+
+
+[Motivation]
+
+Brute Primer was developed after Primer3 (through the command-line interface
+from EMBOSS) failed to design primers for a substantial number of long-flanking
+homology PCR (LFH-PCR) experiments, which was used for deleting small,
+non-coding RNA (sRNA) genes in /Bacillus subtilis/. The thought of designing
+primers by hand was unattractive because of the high chance of human error.
+
+Regardless of whether primers were designed by Primer3 or by hand, the primers
+would still be checked for their reasonableness using tntBLAST. This, in turn,
+provided the idea of creating all possible primers of varying lengths and then
+consulting tntBLAST to determine a valid subset of such primers.
+
+
+[Operating Systems]
+
+Debian Linux 8
+Windows 7
+
+Other operating systems or versions may work, but they were not tested.
+
+
+[Prerequisites]
+
+Perl 5.20
+Zorba 3.0 or 4.0 <http://www.zorba.io/home>
+thermonucleotideBLAST 2.01 <http://public.lanl.gov/jgans/tntblast/index.html>
+
+The following CPAN modules are required.
+
+URI::file
+XML::LibXML
+XML::LibXSLT
+
+
+[Installation on Linux]
+
+(1) Install the required CPAN modules.
+
+(2) Install Zorba. Depending on the Linux distribution, Zorba can be installed
+from a repository or must be compiled from source. Make sure that zorba can be
+found from the PATH variable.
+
+(3) Install tntBLAST. There are no binary distributions of tntBLAST. Therefore,
+tntBLAST needs to be compiled from source. Configuring with --enable-openmp and
+then setting the OMP_NUM_THREADS environment variable after installation
+increases performance during execution. Make sure that tntblast can be found
+from the PATH variable.
+
+(4) Copy the Brute Primer release to any directory. brute-primer.pl is the main
+script.
+
+
+[Installation on Windows]
+
+(1) Install Strawberry Perl 5.20 or greater. Make sure that perl can be found
+from the PATH variable.
+
+(2) If necessary, install the required CPAN modules.
+
+(3) Install Zorba. There are official binary distributions of Zorba 3.0 (but
+not Zorba 4.0 as of this release) for Windows. Make sure that zorba can be
+found from the PATH variable.
+
+(4) Install tntBLAST. There are no binary distributions of tntBLAST. Therefore,
+tntBLAST needs to be compiled from source, which can be done in Cygwin. The gcc
+from Strawberry Perl cannot be used. Instead, the gcc from Cygwin must be used.
+After compilation and installation, make sure that tntblast can be found from
+the PATH variable.
+
+(5) Copy the Brute Primer release to any directory. brute-primer.pl is the main
+script.
+
+
+[Usage]
+
+Brute Primer is a command-line program. Assuming brute-primer.pl is in the
+current directory, the following command on Linux will display the options that
+Brute Primer accepts.
+
+./brute-primer.pl -help
+
+On Windows, use the following command.
+
+perl brute-primer.pl -help
+
+For an example of how to use Brute Primer, see the example directory. Knowledge
+of XQuery is required to follow the example. The selected primers in the
+example were used in a successful LFH-PCR experiment.
+
+
+[License]
+
+Brute Primer is under the BSD 3-Clause license. See the LICENSE file.
